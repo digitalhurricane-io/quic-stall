@@ -47,8 +47,6 @@ func Start(addr string) {
 		return
 	}
 
-	go sendLate(conn)
-
 	openStreamsAndSendData(conn)
 
 	log.Println("exiting")
@@ -99,35 +97,4 @@ func sendData(stream quic.Stream) {
 	}
 
 	log.Println("finished sending data")
-}
-
-// Just opens an extra stream after 20 seconds and tries to send.
-// Buffer of size 32Kb fails to send. But size of 5 bytes does send successfully.
-func sendLate(conn quic.Connection) {
-	time.Sleep(20 * time.Second)
-
-	log.Println("opening LATE stream")
-
-	stream, err := conn.OpenStream()
-	if err != nil {
-		log.Println("late stream err: ", err)
-		return
-	}
-
-	err = stream.SetWriteDeadline(time.Now().Add(5 * time.Second))
-	if err != nil {
-		log.Println("failed to set deadline on late stream: ", err)
-		return
-	}
-
-	var buf = make([]byte, 32*1024)
-
-	// writing small buffer like this succeeds: bytes.Repeat([]byte{'A'}, 32*1024)
-	_, err = stream.Write(buf)
-	if err != nil {
-		log.Println("late stream write err: ", err)
-		return
-	}
-
-	log.Println("wrote to late stream successfully")
 }

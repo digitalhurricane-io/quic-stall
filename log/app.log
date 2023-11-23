@@ -1,0 +1,70 @@
+[server]: 2023/11/23 13:59:56 listening on 7000
+[client]: 2023/11/23 13:59:58 connecting to server
+[client]: 2023/11/23 14:00:01 opened data stream
+[server]: 2023/11/23 14:00:01 accepted data stream
+[server]: 2023/11/23 14:00:01 read 12252 bytes from data stream
+[server]: 2023/11/23 14:00:01 read 1225 bytes from data stream
+[server]: 2023/11/23 14:00:01 read 2450 bytes from data stream
+[server]: 2023/11/23 14:00:01 read 1217 bytes from data stream
+[server]: 2023/11/23 14:00:01 read 3669 bytes from data stream
+[server]: 2023/11/23 14:00:01 read 2446 bytes from data stream
+[server]: 2023/11/23 14:00:01 read 1223 bytes from data stream
+[server]: 2023/11/23 14:00:01 read 1223 bytes from data stream
+[server]: 2023/11/23 14:00:01 read 3669 bytes from data stream
+[server]: 2023/11/23 14:00:01 read 2446 bytes from data stream
+[server]: 2023/11/23 14:00:01 read 948 bytes from data stream
+[server]: 2023/11/23 14:00:01 read 3669 bytes from data stream
+[server]: 2023/11/23 14:00:01 read 1223 bytes from data stream
+[server]: 2023/11/23 14:00:01 read 1223 bytes from data stream
+[server]: 2023/11/23 14:00:01 read 1223 bytes from data stream
+[server]: 2023/11/23 14:00:01 read 8561 bytes from data stream
+[server]: 2023/11/23 14:00:01 read 3669 bytes from data stream
+[server]: 2023/11/23 14:00:01 read 2446 bytes from data stream
+[server]: 2023/11/23 14:00:01 read 2446 bytes from data stream
+[server]: 2023/11/23 14:00:01 read 1223 bytes from data stream
+[server]: 2023/11/23 14:00:01 read 1223 bytes from data stream
+[server]: 2023/11/23 14:00:01 read 2446 bytes from data stream
+[server]: 2023/11/23 14:00:01 read 2446 bytes from data stream
+[server]: 2023/11/23 14:00:01 read 970 bytes from data stream
+[server]: 2023/11/23 14:00:01 read 7338 bytes from data stream
+[server]: 2023/11/23 14:00:01 closed data stream before receiving all data
+[server]: 2023/11/23 14:00:01 stream closed
+[client]: 2023/11/23 14:00:06 err writing to stream:  deadline exceeded
+[client]: 2023/11/23 14:00:06 stream closed
+[client]: 2023/11/23 14:00:09 opened data stream
+[server]: 2023/11/23 14:00:09 accepted data stream
+[server]: 2023/11/23 14:00:09 read 11027 bytes from data stream
+[server]: 2023/11/23 14:00:09 read 11017 bytes from data stream
+[server]: 2023/11/23 14:00:09 read 10724 bytes from data stream
+[server]: 2023/11/23 14:00:09 read 19568 bytes from data stream
+[server]: 2023/11/23 14:00:09 read 7338 bytes from data stream
+[server]: 2023/11/23 14:00:09 read 5862 bytes from data stream
+[server]: 2023/11/23 14:00:09 read 4892 bytes from data stream
+[server]: 2023/11/23 14:00:09 closed data stream before receiving all data
+[server]: 2023/11/23 14:00:09 stream closed
+[client]: 2023/11/23 14:00:14 err writing to stream:  deadline exceeded
+[client]: 2023/11/23 14:00:14 stream closed
+[client]: 2023/11/23 14:00:17 opened data stream
+[client]: 2023/11/23 14:00:22 err writing to stream:  deadline exceeded
+[client]: 2023/11/23 14:00:22 stream closed
+[server]: 2023/11/23 14:00:22 accepted data stream
+[server]: 2023/11/23 14:00:22 failed to read from stream:  EOF
+[server]: 2023/11/23 14:00:22 stream closed
+[client]: 2023/11/23 14:00:25 opened data stream
+[client]: 2023/11/23 14:00:30 err writing to stream:  deadline exceeded
+[client]: 2023/11/23 14:00:30 stream closed
+[server]: 2023/11/23 14:00:30 accepted data stream
+[server]: 2023/11/23 14:00:30 failed to read from stream:  EOF
+[server]: 2023/11/23 14:00:30 stream closed
+[client]: 2023/11/23 14:00:33 opened data stream
+[client]: 2023/11/23 14:00:38 err writing to stream:  deadline exceeded
+[client]: 2023/11/23 14:00:38 stream closed
+[server]: 2023/11/23 14:00:38 accepted data stream
+[server]: 2023/11/23 14:00:38 failed to read from stream:  EOF
+[server]: 2023/11/23 14:00:38 stream closed
+[client]: 2023/11/23 14:00:41 opened data stream
+[client]: 2023/11/23 14:00:46 err writing to stream:  deadline exceeded
+[client]: 2023/11/23 14:00:46 stream closed
+[server]: 2023/11/23 14:00:46 accepted data stream
+[server]: 2023/11/23 14:00:46 failed to read from stream:  EOF
+[server]: 2023/11/23 14:00:46 stream closed
