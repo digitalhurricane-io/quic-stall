@@ -37,7 +37,7 @@ func Run(port int) {
 	}
 
 	config := &quic.Config{
-		MaxIncomingStreams: 200,
+		MaxIncomingStreams: 10,
 		KeepAlivePeriod:    2 * time.Second,
 		MaxIdleTimeout:     10 * time.Second,
 		Allow0RTT:          true,
@@ -49,7 +49,7 @@ func Run(port int) {
 			filename := fmt.Sprintf("./log/log_%x_%s.qlog", connID, role)
 			f, err := os.Create(filename)
 			if err != nil {
-				log.Println(fmt.Errorf("failed to create file for qlog: %w", err))
+				log.Println("failed to create file for qlog: ", err)
 				return nil
 			}
 			return qlog.NewConnectionTracer(f, p, connID)
@@ -58,43 +58,20 @@ func Run(port int) {
 
 	listener, err := tr.Listen(generateTLSConfig(), config)
 	if err != nil {
-		log.Fatal(fmt.Errorf("failed to start quic listener: %w", err))
+		log.Fatal("failed to start quic listener: ", err)
 	}
 
 	log.Printf("listening on %d", port)
 
 	conn, err := listener.Accept(context.Background())
 	if err != nil {
-		log.Println(fmt.Errorf("failed to get conn from quic listener: %w", err))
+		log.Println("failed to get conn from quic listener: ", err)
 		return
 	}
 
-	// go periodicallySendHello(conn)
-
 	acceptDataStreams(conn)
 
-	log.Println("DONE")
-}
-
-// Every 3 seconds open a new stream, send the message hello, then close the stream
-func periodicallySendHello(conn quic.Connection) {
-	var msg = []byte{'H', 'E', 'L', 'L', 'O'}
-
-	for {
-		time.Sleep(3 * time.Second)
-		stream, err := conn.OpenStream()
-		if err != nil {
-			log.Println(fmt.Errorf("failed to open stream: %w", err))
-			continue
-		}
-
-		_, err = stream.Write(msg)
-		if err != nil {
-			log.Println(fmt.Errorf("failed to write to stream: %w", err))
-			continue
-		}
-		stream.Close()
-	}
+	log.Println("Exiting")
 }
 
 // Accept client streams. Read from stream then close the stream before client is finished sending.
@@ -102,11 +79,13 @@ func acceptDataStreams(conn quic.Connection) {
 	for {
 		s, err := conn.AcceptStream(context.Background())
 		if err != nil {
-			log.Println(fmt.Errorf("failed to accept stream: %w", err))
+			log.Println("failed to accept stream: ", err)
 			return
 		}
 
-		readFromDataStream(s)
+		log.Println("accepted data stream")
+
+		go readFromDataStream(s)
 	}
 }
 
@@ -114,9 +93,9 @@ func readFromDataStream(s quic.Stream) {
 	defer func() {
 		err := s.Close()
 		if err != nil {
-			log.Println(fmt.Errorf("err closing stream: %w", err))
+			log.Println("err closing stream: ", err)
 		} else {
-			log.Println("closed stream")
+			log.Println("stream closed")
 		}
 	}()
 
@@ -130,14 +109,14 @@ func readFromDataStream(s quic.Stream) {
 			log.Printf("read %d bytes from data stream", n)
 		}
 		if err != nil {
-			log.Println(fmt.Errorf("failed to read from stream: %w", err))
+			log.Println("failed to read from stream: ", err)
 			return
 		}
 
 		bytesRead += n
 
 		// close the stream while client is still sending
-		if bytesRead > 32*1024*2 {
+		if bytesRead > 64*1024 {
 			log.Println("closed data stream before receiving all data")
 			return
 		}

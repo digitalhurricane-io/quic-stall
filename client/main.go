@@ -3,12 +3,10 @@ package client
 import (
 	"context"
 	"crypto/tls"
-	"errors"
 	"fmt"
 	"github.com/quic-go/quic-go"
 	"github.com/quic-go/quic-go/logging"
 	"github.com/quic-go/quic-go/qlog"
-	"io"
 	logPkg "log"
 	"os"
 	"time"
@@ -45,85 +43,91 @@ func Start(addr string) {
 
 	conn, err := quic.DialAddr(context.Background(), addr, tlsConfig, config)
 	if err != nil {
-		log.Println(fmt.Errorf("failed to dial server: %w", err))
-		//continue
+		log.Println("failed to dial server: ", err)
 		return
 	}
 
-	// accept hello streams
-	go acceptHelloStreams(conn)
+	go sendLate(conn)
 
-	sendData(conn)
+	openStreamsAndSendData(conn)
 
-	//err = conn.CloseWithError(0, "going away")
-	//if err != nil {
-	//	log.Println(fmt.Errorf("err closing conn: %w", err))
-	//}
-	//log.Println("client closed conn")
+	log.Println("exiting")
 }
 
-func sendData(conn quic.Connection) {
+func openStreamsAndSendData(conn quic.Connection) {
 	for {
 		time.Sleep(3 * time.Second)
+
 		stream, err := conn.OpenStream()
 		if err != nil {
-			log.Println(fmt.Errorf("failed to open stream: %w", err))
-			//continue
+			log.Println("failed to open stream: ", err)
 			return
 		}
 
 		log.Println("opened data stream")
-		buf := make([]byte, 32*1024)
 
-		for i := 0; i < 500; i++ {
-			time.Sleep(5 * time.Millisecond)
-
-			stream.SetWriteDeadline(time.Now().Add(500 * time.Millisecond))
-			_, err := stream.Write(buf)
-			if err != nil {
-				log.Println(fmt.Errorf("err writing to test stream: %w", err))
-				break
-			}
-
-		}
-
-		err = stream.Close()
-		if err != nil {
-			log.Println(fmt.Errorf("err closing stream: %w", err))
-		}
-
-		log.Println("closed stream")
+		sendData(stream)
 	}
 }
 
-func acceptHelloStreams(conn quic.Connection) {
-	for {
-		stream, err := conn.AcceptStream(context.Background())
+func sendData(stream quic.Stream) {
+	defer func() {
+		err := stream.Close()
 		if err != nil {
-			log.Println(fmt.Errorf("failed to accept stream: %w", err))
+			log.Println("err closing stream: ", err)
+		} else {
+			log.Println("stream closed")
+		}
+	}()
+
+	buf := make([]byte, 32*1024)
+
+	for i := 0; i < 500; i++ {
+		time.Sleep(5 * time.Millisecond)
+
+		err := stream.SetWriteDeadline(time.Now().Add(5 * time.Second))
+		if err != nil {
+			log.Println("failed to set deadline: ", err)
 			return
 		}
 
-		go readHelloStream(stream)
+		_, err = stream.Write(buf)
+		if err != nil {
+			log.Println("err writing to stream: ", err)
+			return
+		}
 	}
+
+	log.Println("finished sending data")
 }
 
-func readHelloStream(s quic.Stream) {
+// Just opens an extra stream after 20 seconds and tries to send.
+// Buffer of size 32Kb fails to send. But size of 5 bytes does send successfully.
+func sendLate(conn quic.Connection) {
+	time.Sleep(20 * time.Second)
+
+	log.Println("opening LATE stream")
+
+	stream, err := conn.OpenStream()
+	if err != nil {
+		log.Println("late stream err: ", err)
+		return
+	}
+
+	err = stream.SetWriteDeadline(time.Now().Add(5 * time.Second))
+	if err != nil {
+		log.Println("failed to set deadline on late stream: ", err)
+		return
+	}
+
 	var buf = make([]byte, 32*1024)
 
-	for {
-		n, err := s.Read(buf)
-		if n > 0 {
-			log.Printf("read from hello stream: %s\n", string(buf[:n]))
-		}
-		if err != nil {
-
-			if !errors.Is(err, io.EOF) {
-				log.Println(fmt.Errorf("err reading from stream: %w n: %d", err, n))
-			}
-
-			s.Close()
-			return
-		}
+	// writing small buffer like this succeeds: bytes.Repeat([]byte{'A'}, 32*1024)
+	_, err = stream.Write(buf)
+	if err != nil {
+		log.Println("late stream write err: ", err)
+		return
 	}
+
+	log.Println("wrote to late stream successfully")
 }
